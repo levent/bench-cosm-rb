@@ -13,7 +13,10 @@ json = feed.to_json
 xml = feed.to_xml
 csv = feed.to_csv
 
-Benchmark.benchmark(" "*10 + CAPTION, 10, FMTSTR) do |x|
+GC.start
+puts "Starting..."
+
+Benchmark.bmbm do |x|
   x.report("feed#to_json") do
     RUNS.times do
       feed.to_json
