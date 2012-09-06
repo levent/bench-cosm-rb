@@ -7,13 +7,32 @@ include Benchmark
 
 RUNS = 10000
 ds = []
-10.times {ds << Cosm::Datastream.new({:id => "ds#{rand(1000)}", :current_value => rand(1024), :updated => Time.now})}
-feed = Cosm::Feed.new(:title => "Profile feed", :datastreams => ds, :tags => ["a", "b", "c"])
+10.times {ds << Cosm::Datastream.new({
+  :id => "ds#{rand(1000)}",
+  :current_value => rand(1024),
+  :updated => Time.now,
+  :unit_symbol => "C",
+  :unit_label => "Temperature",
+  :unit_type => "n/a",
+  :min_value => 1,
+  :max_value => 2,
+  :tags => ['one'],
+  :datapoints => [Cosm::Datapoint.new({:at => Time.now, :value => 123}), Cosm::Datapoint.new({:at => Time.now, :value => 321})]
+})}
+feed = Cosm::Feed.new(
+  :title => "Profile feed",
+  :datastreams => ds,
+  :tags => ["a", "b", "c"],
+  :creator => "Levent",
+  :location_name => "London",
+  :location_disposition => "Disposessed",
+  :owner_login => "lebreeze"
+)
 json = feed.to_json
 xml = feed.to_xml
 csv = feed.to_csv
+puts Cosm::Feed.new(xml).to_xml
 
-GC.start
 puts "Starting..."
 
 Benchmark.bmbm do |x|
