@@ -80,6 +80,7 @@ Benchmark.bmbm do |x|
   end
 end
 
+puts
 puts "Benchmarking datastreams..."
 
 Benchmark.bmbm do |x|
