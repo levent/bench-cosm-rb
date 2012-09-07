@@ -19,6 +19,7 @@ ds = []
   :tags => ['one'],
   :datapoints => [Cosm::Datapoint.new({:at => Time.now, :value => 123}), Cosm::Datapoint.new({:at => Time.now, :value => 321})]
 })}
+
 feed = Cosm::Feed.new(
   :title => "Profile feed",
   :datastreams => ds,
@@ -28,12 +29,18 @@ feed = Cosm::Feed.new(
   :location_disposition => "Disposessed",
   :owner_login => "lebreeze"
 )
-json = feed.to_json
-xml = feed.to_xml
-csv = feed.to_csv
-puts Cosm::Feed.new(xml).to_xml
 
-puts "Starting..."
+datastream = ds[0]
+
+feed_json = feed.to_json
+feed_xml = feed.to_xml
+feed_csv = feed.to_csv
+
+datastream_json = datastream.to_json
+datastream_xml = datastream.to_xml
+datastream_csv = "2012-09-07T13:28:05.041739+00:00,321"
+
+puts "Benchmarking feeds..."
 
 Benchmark.bmbm do |x|
   x.report("feed#to_json") do
@@ -56,19 +63,59 @@ Benchmark.bmbm do |x|
 
   x.report("feed#from_json") do
     RUNS.times do
-      Cosm::Feed.new(json)
+      Cosm::Feed.new(feed_json)
     end
   end
 
   x.report("feed#from_xml") do
     RUNS.times do
-      Cosm::Feed.new(xml)
+      Cosm::Feed.new(feed_xml)
     end
   end
 
   x.report("feed#from_csv") do
     RUNS.times do
-      Cosm::Feed.new(csv, :v2)
+      Cosm::Feed.new(feed_csv, :v2)
+    end
+  end
+end
+
+puts "Benchmarking datastreams..."
+
+Benchmark.bmbm do |x|
+  x.report("datastream#to_json") do
+    RUNS.times do
+      datastream.to_json
+    end
+  end
+
+  x.report("datastream#to_xml") do
+    RUNS.times do
+      datastream.to_xml
+    end
+  end
+
+  x.report("datastream#to_csv") do
+    RUNS.times do
+      datastream.to_csv
+    end
+  end
+
+  x.report("datastream#from_json") do
+    RUNS.times do
+      Cosm::Datastream.new(datastream_json)
+    end
+  end
+
+  x.report("datastream#from_xml") do
+    RUNS.times do
+      Cosm::Datastream.new(datastream_xml)
+    end
+  end
+
+  x.report("datastream#from_csv") do
+    RUNS.times do
+      Cosm::Datastream.new(datastream_csv)
     end
   end
 end
